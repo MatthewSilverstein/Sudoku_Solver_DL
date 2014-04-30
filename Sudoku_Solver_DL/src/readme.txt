@@ -1,0 +1,1 @@
+A Dancing Links implementation of Knuth's AlgorithmX for solving Sudoku puzzles.  
