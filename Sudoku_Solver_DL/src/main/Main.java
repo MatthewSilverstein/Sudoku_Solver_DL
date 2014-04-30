@@ -19,15 +19,15 @@ public class Main {
 	public static final boolean DEBUG=false;
 	
 	public static void main(String[]args){
-		String sudoku=	"000000000"+
-						"000000000"+
-						"000000000"+
-						"000000000"+
-						"000000000"+
-						"000000000"+
-						"000000000"+
-						"000000000"+
-						"000000000";
+		String sudoku=	"013400000"+
+				"000050007"+
+				"002008605"+
+				"007000002"+
+				"050040010"+
+				"800000900"+
+				"406300800"+
+				"200080000"+
+				"000007360";
 		System.out.println(solveSudoku(sudoku));
 	}
 	
@@ -35,15 +35,14 @@ public class Main {
 		Node[][] sudoku=createSudoku(s);
 		ArrayList<Node> result=solveSudoku(sudoku);
 		int[]symbols=new int[81];
-		System.out.println(result.size());
 		for (int i=0;i<result.size();i++){
-			symbols[i]=(result.get(i).symbol.value);
+			symbols[i]=((result.get(i).symbol.value));
 		}
 		Arrays.sort(symbols);
 		String solved="";
 		for(int i=0;i<9;i++){
 			for (int j=0;j<9;j++){
-				solved+=((symbols[i*9+j]%9)+"\t");
+				solved+=((symbols[i*9+j]%9+1)+"\t");
 			}
 			solved+="\n";
 		}
