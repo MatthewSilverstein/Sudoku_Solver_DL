@@ -11,65 +11,49 @@ import java.util.Map;
 
 
 public class Main {
+	
 	public static final String NEWLINE="\n";
 	public static String output="output";
 	public static String output2="output2";
 	public static BufferedWriter out,out2;
 	public static final boolean DEBUG=false;
 	
-	public static void test1(){
-		try {
-			out=new BufferedWriter(new FileWriter(output));
-			out2=new BufferedWriter(new FileWriter(output2));
-			Node[][] sudoku=createSudoku();
-			sudoku=createSudoku(	"000000000"+
-									"000000000"+
-									"000000000"+
-									"000000000"+
-									"000000000"+
-									"000000000"+
-									"000000000"+
-									"000000000"+
-									"000000000");
-			sudoku=createSudoku(	"300200781"+
-									"005700064"+
-									"000009003"+
-									"002005070"+
-									"587000346"+
-									"060800500"+
-									"700300000"+
-									"940002100"+
-									"253004008");
-//			Main.test(sudoku[0][0], sudoku);
-//			printConnectivity(sudoku[20][20]);
-			ArrayList<Node> result=solveSudoku(sudoku);
-			int[]symbols=new int[81];
-			System.out.println(result.size());
-			for (int i=0;i<result.size();i++){
-				symbols[i]=(result.get(i).symbol.value);
-			}
-			Arrays.sort(symbols);
-			for(int i=0;i<9;i++){
-				for (int j=0;j<9;j++){
-					System.out.print((symbols[i*9+j]%9)+"\t");
-				}
-				System.out.println();
-			}
-			System.out.println("DONE");
-			out.close();
-			out2.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}		
+	public static void main(String[]args){
+		String sudoku=	"000000000"+
+						"000000000"+
+						"000000000"+
+						"000000000"+
+						"000000000"+
+						"000000000"+
+						"000000000"+
+						"000000000"+
+						"000000000";
+		System.out.println(solveSudoku(sudoku));
 	}
 	
-	public static void main(String[]args){
-		test1();
+	public static String solveSudoku(String s){
+		Node[][] sudoku=createSudoku(s);
+		ArrayList<Node> result=solveSudoku(sudoku);
+		int[]symbols=new int[81];
+		System.out.println(result.size());
+		for (int i=0;i<result.size();i++){
+			symbols[i]=(result.get(i).symbol.value);
+		}
+		Arrays.sort(symbols);
+		String solved="";
+		for(int i=0;i<9;i++){
+			for (int j=0;j<9;j++){
+				solved+=((symbols[i*9+j]%9)+"\t");
+			}
+			solved+="\n";
+		}
+		return solved;
 	}
+	
 	
 	/************************************************************** SOLVE SUDOKU and subparts ******************************************************/
 	//TODO SOLVE SUDOKU
-	public static ArrayList<Node> solveSudoku(Node[][] nodes)throws IOException{
+	public static ArrayList<Node> solveSudoku(Node[][] nodes){
 		Node[] sums=new Node[nodes.length];
 		for (int i=0;i<nodes.length;i++){
 			int sum=0;
@@ -86,16 +70,8 @@ public class Main {
 		return solveSudokuR(nodes,nodes[0][0],729,324,NEWLINE);
 	}
 	
-	public static ArrayList<Node> solveSudokuR(Node[][] nodes,Node node,int rows,int cols,String indent)throws IOException{
+	public static ArrayList<Node> solveSudokuR(Node[][] nodes,Node node,int rows,int cols,String indent){
 		node=findConnectedNode(nodes);
-		if (DEBUG){
-			out.write(indent+"Solve "+rows+","+cols+";");
-			out.write(""+(node==null));
-//			out.write(indent+"Node "+node.symbol.value+","+node.constraint.value);
-			out.flush();
-			out2.write("Solve "+rows+","+cols+";");
-//			nodesToString(nodes,out2);
-		}
 		
 		if (node==null){
 			return new ArrayList<Node>();
@@ -107,8 +83,6 @@ public class Main {
 		Node nodeSum=node.sum;
 		Node minNode=node;
 		Node nodee=node;
-		out.write(indent+"Solve "+rows+","+cols+";");
-		out.flush();
 		do{
 			node=node.right;
 			nodeSum=node.sum;
@@ -117,8 +91,6 @@ public class Main {
 				minNode=node;
 			}
 		}while(!nodee.equals(node));
-		out.write(indent+"Solve "+rows+","+cols+";");
-		out.flush();
 		
 		if (minSum.value==0){
 			return null;
@@ -126,36 +98,20 @@ public class Main {
 		
 		//Now loop through minCol
 		node=minNode;
-		if (DEBUG){
-			out.write(indent+"Chosen Constraint "+node.constraint.value);
-			out.flush();
-		}
 		do{
 			node=node.down;
 			if (node.value==0){
 				continue;
 			}
 			Node node2=node;
-			if (DEBUG){
-				out.write(indent+"|"+"Chosen Symbol "+node.symbol.value);
-				out.flush();
-			}
 			ArrayList<Node> removedNodes=new ArrayList<Node>();
 			Map<Node,Character> removedMap=new HashMap<Node,Character>();
 			do{	//Goes through all constraints for this symbol and finds any matches
 				node2=node2.right;
 				if (node2.value==1){
-					if (DEBUG){
-						out.write(indent+"||"+"Chosen Contraint "+node2.constraint.value);
-						out.flush();
-					}
 					Node node3=node2.down;
 					while(!node3.equals(node2)){	//Goes through all symbols for this constraint except for chosen symbol, if match, removes symbol/row
 						if (node3.value==1){
-							if (DEBUG){
-								out.write(indent+"|||"+"Remove Symbol "+node3.symbol.value);
-								out.flush();
-							}
 							Node node4=node3;
 							removeRow(node3,rows,cols);
 							rows--;
@@ -169,10 +125,6 @@ public class Main {
 					while(!node3.connected){
 						node3=node3.down;
 					}
-					if (DEBUG){
-						out.write(indent+"||"+"Remove Constraint "+node3.constraint.value);
-						out.flush();
-					}
 					removeColumn(node3,rows,cols);
 					removedNodes.add(0,node3);
 					removedMap.put(node3, 'c');
@@ -181,20 +133,6 @@ public class Main {
 			}while(!node2.equals(node));
 			node2=node;
 			ArrayList<Node>list=new ArrayList<Node>();
-			/*
-			while(!node.connected){
-				node=node.right;
-			}
-			removeRow(node,rows--,cols);
-			removedNodes.add(0,node);
-			removedMap.put(node, 'r');
-			*/
-			if (DEBUG){
-				out.write(indent+"Node connected "+node.connected);
-				out.flush();
-				out.write(indent+"|"+"List "+list.size());
-				out.flush();
-			}
 			
 			//Try solving like this
 			ArrayList<Node> result=solveSudokuR(nodes,node, rows, cols,indent+"\t");
