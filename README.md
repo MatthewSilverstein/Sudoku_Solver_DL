@@ -1,7 +1,8 @@
 Sudoku_Solver_DL
 ================
 
-A Dancing Links implementation of Knuth's AlgorithmX for solving Sudoku puzzles.  
+A Dancing Links implementation of Knuth's AlgorithmX for solving Sudoku puzzles.
+
 Sudokus can be solved by entering string of given sudoku.  A solved sudoku will be returned.
 Example:
 Given Sudoku:
