@@ -49,6 +49,7 @@ String s=	"013400000"+
 
 String result=Main.solveSudoku(s);
 s->
+
 5	1	3	4	7	6	2	9	8	
 6	9	8	2	5	3	1	4	7	
 7	4	2	9	1	8	6	3	5	
